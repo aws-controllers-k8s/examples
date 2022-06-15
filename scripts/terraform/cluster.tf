@@ -76,7 +76,7 @@ data "aws_eks_addon_version" "default" {
 
 
 module "eks_kubernetes_addons" {
-  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.0.9"
+  source = "github.com/aws-ia/terraform-aws-eks-blueprints/modules/kubernetes-addons?ref=v4.0.9"
 
   eks_cluster_id               = module.eks_cluster.eks_cluster_id
   eks_cluster_endpoint         = module.eks_cluster.eks_cluster_endpoint
