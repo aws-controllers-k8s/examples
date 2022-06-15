@@ -1,0 +1,30 @@
+---
+apiVersion: rds.services.k8s.aws/v1alpha1
+kind: DBCluster
+metadata:
+  name: $DB_CLUSTER_ID 
+spec:
+  availabilityZones: 
+  - $AZ_A 
+    $AZ_B 
+    $AZ_C
+  backupRetentionPeriod: 14 
+  dbClusterIdentifier: $DB_CLUSTER_ID 
+  databaseName: $DB_NAME 
+  engine: aurora-mysql 
+  engineMode: serverless 
+  deletionProtection: false
+  engineVersion: "5.7.12" 
+  storageEncrypted: false
+  scalingConfiguration: 
+    autoPause: true
+    maxCapacity: 5
+    minCapacity: 1
+  masterUsername: root 
+  masterUserPassword:
+    namespace: $MASTER_USER_PASS_SECRET_NAMESPACE 
+    name: $MASTER_USER_PASS_SECRET_NAME 
+    key: $MASTER_USER_PASS_SECRET_KEY 
+  tags:
+    - key: $DB_CLUSTER_TAG_KEY 
+      value: $DB_CLUSTER_TAG_VALUE 

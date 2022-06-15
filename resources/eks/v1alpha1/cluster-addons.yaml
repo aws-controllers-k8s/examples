@@ -1,0 +1,10 @@
+---
+apiVersion: eks.services.k8s.aws/v1alpha1
+kind: Addon
+metadata:
+  name: $ADDON_NAME
+spec:
+  name: $ADDON_NAME
+  addonVersion: $ADDON_VERSION
+  #https://docs.aws.amazon.com/eks/latest/APIReference/API_DescribeAddonVersions.html
+  clusterName: $CLUSTER_NAME

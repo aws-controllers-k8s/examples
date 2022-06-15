@@ -1,0 +1,15 @@
+---
+apiVersion: eks.services.k8s.aws/v1alpha1
+kind: Cluster
+metadata:
+  name: $CLUSTER_NAME 
+spec:
+  name: $CLUSTER_NAME 
+  roleARN: $CLUSTER_ROLE 
+  resourcesVPCConfig:
+    endpointPrivateAccess: true
+    endpointPublicAccess: false
+    subnetIDs:
+      - "$PUBLIC_SUBNET_1" 
+      - "$PUBLIC_SUBNET_2" 
+  version: $KUBERNETES_VERSION 

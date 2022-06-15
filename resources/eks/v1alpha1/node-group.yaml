@@ -1,0 +1,23 @@
+---
+apiVersion: eks.services.k8s.aws/v1alpha1
+kind: Nodegroup
+metadata:
+  name: $NODEGROUP_NAME
+spec:
+  name: $NODEGROUP_NAME 
+  clusterName: $CLUSTER_NAME 
+  amiType: $AMI_TYPE 
+  diskSize: $DISK_SIZE 
+  instanceTypes:
+  - $INSTANCE_TYPE 
+  #https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html#managed-node-group-capacity-types
+  subnets:
+    - "$PUBLIC_SUBNET_1" 
+    - "$PUBLIC_SUBNET_2" 
+  scalingConfig:
+    minSize: 1
+    maxSize: 1
+    desiredSize: 1
+  updateConfig: 
+    maxUnavailable: $NUMBER_OF_NODES 
+    maxUnavailablePercentage: $NUMBER_OF_PERCENTAGE 

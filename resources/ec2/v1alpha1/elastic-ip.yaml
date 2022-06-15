@@ -1,0 +1,11 @@
+---
+apiVersion: ec2.services.k8s.aws/v1alpha1
+kind: ElasticIPAddress
+metadata:
+  name: $ADDRESS_NAME
+spec:
+  tagSpecifications:
+  - resourceType: "elasticipaddress"
+    tags:
+    - key: $EIP_TAG_KEY
+      value: $EIP_TAG_VALUE
