@@ -1,0 +1,19 @@
+---
+apiVersion: ec2.services.k8s.aws/v1alpha1
+kind: VPCEndpoint
+metadata:
+  name: $VPC_ENDPOINT_NAME
+spec:
+  serviceName: $SERVICE_NAME
+  vpcID: $VPC_ID
+  routeTableIDs:
+  - $ROUTE_TABLE_ID
+  securityGroupIDs:
+  - $SECURITY_GROUP_ID
+  subnetIDs:
+  - $SUBNET_ID
+  tagSpecifications:
+  - resourceType: "vpcendpoint"
+    tags:
+    - key: $VPC_ENDPOINT_TAG_KEY
+      value: $VPC_ENDPOINT_TAG_VALUE

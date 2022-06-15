@@ -1,0 +1,16 @@
+---
+apiVersion: emrcontainers.services.k8s.aws/v1alpha1
+kind: VirtualCluster
+metadata:
+  name: $VIRTUALCLUSTER_NAME
+spec:
+  name: $VIRTUALCLUSTER_NAME
+  containerProvider:
+    id: $EKS_CLUSTER_NAME 
+    type_: EKS
+    info:
+      eksInfo:
+        namespace: $KUBERNETES_NAMESPACE 
+  tags:
+    - key: $VIRTUAL_CLUSTER_TAG_KEY 
+      value: $VIRTUAL_CLUSTER_TAG_VALUE 

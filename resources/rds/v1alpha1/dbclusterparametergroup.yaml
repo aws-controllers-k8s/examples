@@ -1,0 +1,25 @@
+---
+apiVersion: rds.services.k8s.aws/v1alpha1
+kind: DBClusterParameterGroup
+metadata:
+  name: $DB_CLUSTER_PARAMETER_GROUP_NAME 
+spec:
+  name: $DB_CLUSTER_PARAMETER_GROUP_NAME 
+  description: $DB_CLUSTER_PARAMETER_GROUP_DESC 
+  family: "aurora-mysql5.7"
+  #parameters:
+  #- allowedValues: string
+  #  applyMethod: string
+  #  applyType: string
+  #  dataType: string
+  #  description: string
+  #  isModifiable: boolean
+  #  minimumEngineVersion: string
+  #  parameterName: string
+  #  parameterValue: string
+  #  source: string
+  #  supportedEngineModes:
+  #  - string
+  tags:
+    - key: $DB_CLUSTER_TAG_KEY 
+      value: $DB_CLUSTER_TAG_VALUE 
