@@ -1,0 +1,7 @@
+---
+apiVersion: sfn.services.k8s.aws/v1alpha1
+kind: Activity
+metadata:
+  name: $ACTIVITY_NAME
+spec:
+  name: $ACTIVITY_NAME
