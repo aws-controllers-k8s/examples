@@ -1,10 +1,10 @@
 apiVersion: prometheusservice.services.k8s.aws/v1alpha1
 kind: RuleGroupsNamespace
 metadata:
-  name: $NAMESPACE
+  name: $RULE_GROUPS_NAME
 spec:
   workspaceID: $WORKSPACE_ID
-  name: $NAMESPACE
+  name: $RULE_GROUPS_NAME
   # The configuration is multiline string of the configuration YAML file
   # https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-APIReference.html#AMP-APIReference-RuleGroupsNamespaceData
   configuration: |
