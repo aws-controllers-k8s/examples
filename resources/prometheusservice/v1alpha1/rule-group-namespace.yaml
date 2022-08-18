@@ -1,0 +1,22 @@
+apiVersion: prometheusservice.services.k8s.aws/v1alpha1
+kind: RuleGroupsNamespace
+metadata:
+  name: $RULE_GROUPS_NAME
+spec:
+  workspaceID: $WORKSPACE_ID
+  name: $RULE_GROUPS_NAME
+  # The configuration is multiline string of the configuration YAML file
+  # https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-APIReference.html#AMP-APIReference-RuleGroupsNamespaceData
+  configuration: |
+    groups:
+    - name: test-rule
+      rules:
+      - record: metric:recording_rule
+        expr: avg(rate(container_cpu_usage_seconds_total[5m]))
+    - name: alert-test
+      rules:
+      - alert: metric:alerting_rule
+        expr: avg(rate(container_cpu_usage_seconds_total[5m])) > 0
+        for: 1m
+  tags:
+    $KEY_1_TAG: $VALUE_1_TAG
