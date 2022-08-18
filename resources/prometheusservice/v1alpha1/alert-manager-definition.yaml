@@ -1,0 +1,21 @@
+apiVersion: prometheusservice.services.k8s.aws/v1alpha1
+kind: AlertManagerDefinition
+metadata:
+  name: $ALERT_MANAGER_DEFINITION_NAME
+spec:
+  workspaceID: $WORKSPACE_ID
+  # The configuration is multiline string of the configuration YAML file
+  # https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-APIReference.html#AMP-APIReference-AlertManagerDefinitionData
+  configuration: |
+    alertmanager_config: |
+      route:
+         receiver: '$SNS_TOPIC'
+      receivers:
+        - name: '$SNS_TOPIC'
+          sns_configs:
+          - topic_arn: $SNS_TOPIC_ARN
+            sigv4:
+              region: $SNS_REGION
+            attributes:
+              key: key1
+              value: value1
