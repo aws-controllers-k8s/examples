@@ -1,0 +1,10 @@
+---
+apiVersion: lambda.services.k8s.aws/v1alpha1
+kind: CodeSigningConfig
+metadata:
+  name: $CODE_SIGNING_CONFIG_NAME
+spec:
+  allowedPublishers:
+    signingProfileVersionARNs:
+    - $SIGNING_PROFILE_VERSION_ARN
+  description: $CODE_SIGNING_CONFIG_DESCRIPTION
