@@ -9,3 +9,6 @@ spec:
   availabilityZone: $AZ
   routeTables:
   - $ROUTE_TABLE_ID
+  tags:
+    - key: $TAG_KEY
+      value: $TAG_VALUE

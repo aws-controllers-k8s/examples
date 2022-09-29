@@ -4,8 +4,6 @@ kind: ElasticIPAddress
 metadata:
   name: $ADDRESS_NAME
 spec:
-  tagSpecifications:
-  - resourceType: "elasticipaddress"
-    tags:
+  tags:
     - key: $EIP_TAG_KEY
       value: $EIP_TAG_VALUE

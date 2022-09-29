@@ -7,8 +7,6 @@ spec:
   allocationID: $ALLOCATION_ID
   subnetID: $SUBNET_ID-
   connectivityType: "public"
-  tagSpecifications:
-  - resourceType: "natgateway"
-    tags:
-    - key: $NAT_GW_TAG_KEY
-      value: $NAT_GW_TAG_VALUE
+  tags:
+    - key: $TAG_KEY
+      value: $TAG_VALUE
