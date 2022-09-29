@@ -12,8 +12,6 @@ spec:
   - $SECURITY_GROUP_ID
   subnetIDs:
   - $SUBNET_ID
-  tagSpecifications:
-  - resourceType: "vpcendpoint"
-    tags:
-    - key: $VPC_ENDPOINT_TAG_KEY
-      value: $VPC_ENDPOINT_TAG_VALUE
+  tags:
+    - key: $TAG_KEY
+      value: $TAG_VALUE

@@ -8,3 +8,6 @@ spec:
   enableDNSSupport: true
   enableDNSHostnames: true
   instanceTenancy: "default"
+  tags:
+    - key: $TAG_KEY
+      value: $TAG_VALUE

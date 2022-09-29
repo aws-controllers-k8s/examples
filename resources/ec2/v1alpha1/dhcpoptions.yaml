@@ -8,8 +8,10 @@ spec:
     - key: $DHCP_KEY_1
       values:
         - $DHCP_VAL_1
-  tagSpecifications:
-  - resourceType: "dhcpoptions"
-    tags:
+    - key: $DHCP_KEY_2
+      values:
+        - $DHCP_VAL_2_1
+        - $DHCP_VAL_2_2
+  tags:
     - key: $DHCP_TAG_KEY
       value: $DHCP_TAG_VALUE

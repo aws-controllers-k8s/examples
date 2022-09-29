@@ -5,3 +5,6 @@ metadata:
   name: $INTERNET_GATEWAY_NAME
 spec:
   vpc: $VPC_ID
+  tags:
+    - key: $IGW_TAG_KEY
+      value: $IGW_TAG_VALUE

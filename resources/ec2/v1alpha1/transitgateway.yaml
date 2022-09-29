@@ -10,3 +10,6 @@ spec:
     defaultRouteTableAssociation: $ROUTE_TABLE_ASSOCIATION
     transitGatewayCIDRBlocks:
     - $CIDR_BLOCK
+  tags:
+    - key: $TAG_KEY
+      value: $TAG_VALUE

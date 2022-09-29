@@ -10,8 +10,6 @@ spec:
     - destinationCIDRBlock: $DEST_CIDR_BLOCK
       natGatewayID: $NGW_ID
   vpcID: $VPC_ID
-  tagSpecifications:
-  - resourceType: "routetable"
-    tags:
-    - key: $ROUTE_TABLE_TAG_KEY
-      value: $ROUTE_TABLE_TAG_VALUE
+  tags:
+    - key: $TAG_KEY
+      value: $TAG_VALUE
