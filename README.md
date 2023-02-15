@@ -9,6 +9,7 @@ The structure of this repository is as follows:
 |---------|-----------|
 |`resources`|YAML files for individual ACK resources, split by service controller|
 |`scripts`|Scripts for easily bootstrapping and installing an ACK controller|
+|`usecases`|Demo how to use multiple ACK controllers for real use cases|
 
 These examples are maintained by the community and may become out of date if the
 custom resource definitions change.
