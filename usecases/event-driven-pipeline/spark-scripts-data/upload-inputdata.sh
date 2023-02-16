@@ -9,10 +9,14 @@
 S3_BUCKET="sparkjob-demo-bucket"
 REGION="us-west-2"       # Enter region
 
-
+# copy pod templates 
 INPUT_DATA_S3_PATH="s3://${S3_BUCKET}/input/"
 aws s3 cp spark-scripts-data/pod-templates/driver-pod-template.yaml s3://${S3_BUCKET}/scripts/ --region ${REGION}
 aws s3 cp spark-scripts-data/pod-templates/executor-pod-template.yaml s3://${S3_BUCKET}/scripts/ --region ${REGION}
+
+# turn on s3 bucket notification
+aws s3api put-bucket-notification-configuration --bucket ${S3_BUCKET} --notification-configuration '{ "EventBridgeConfiguration": {} }'  --region ${REGION}                                                                              
+
 
 # Copy Test Input data to S3 bucket
 mkdir input
