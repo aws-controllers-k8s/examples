@@ -76,10 +76,13 @@ kubectl apply -f ack-yamls/emr-virtualcluster.yaml
 
 ### Create a S3 bucket and upload data
 Next, let’s create a S3 bucket for storing spark pod templates and sample data. 
+*Note*: If you don’t see the bucket got created, you can check the log from ACK S3 controller pod for details. The error is mostly caused by the bucket with the same name has existed. You need to change the bucket name in s3.yaml as well as in eventbridge.yaml and sfn.yaml. You also need to update upload-inputdata.sh and upload-spark-scripts.sh with the new bucket name.
+
+
 ```bash
 kubectl apply -f ack-yamls/s3.yaml
 ```
-*Note*: If you don’t see the bucket got created, you can check the log from ACK S3 controller pod for details. The error is mostly caused by the bucket with the same name has existed. You need to change the bucket name in s3.yaml as well as in eventbridge.yaml and sfn.yaml. You also need to update upload-inputdata.sh and upload-spark-scripts.sh with the new bucket name.
+
 
 Run the command below to upload input data and pod templates. Once done, sparkjob-demo-bucket S3 bucket is created with two folders: input and scripts.
 ```bash
@@ -93,7 +96,7 @@ You need to make the following changes in sfn.yaml before apply.
 * replace the value for roleARN with stepfunctions_role_arn 
 * replace the value for ExecutionRoleArn with emr_on_eks_role_arn
 * replace the value for VirtualClusterId with your virtual cluster id
-* optional: change sparkjob-demo-bucket with your bucket name 
+* change sparkjob-demo-bucket with your bucket name 
 
 sfn.yaml
 ```bash
@@ -149,6 +152,8 @@ spec:
 You can get your virtual cluster id from EMR console or use the command below.
 ```bash
 kubectl get virtualcluster -o jsonpath={.items..status.id}
+```
+```bash
 # result:
 f0u3vt3y4q2r1ot11m7v809y6  # VirtualClusterId
 ```
@@ -162,6 +167,8 @@ The last step is to create an EventBridge rule which is used as an event broker 
 
 ```bash
 kubectl get StateMachine -o jsonpath={.items..status.ackResourceMetadata.arn}
+```
+```bash
 # result
 arn: arn:aws:states:us-west-2:xxxxxxxxxx:stateMachine:run-spark-job-ack # sfn_arn
 ```
@@ -169,7 +176,7 @@ Then, update eventbridge.yaml with
 
 * replace the value for roleARN with eventbridge_role_arn
 * replace with arn with your sfn_arn 
-* optional: change sparkjob-demo-bucket with your bucket name 
+* change sparkjob-demo-bucket with your bucket name 
 eventbridge.yaml
 ```bash
 apiVersion: eventbridge.services.k8s.aws/v1alpha1
