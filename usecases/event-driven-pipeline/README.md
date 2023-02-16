@@ -1,9 +1,9 @@
 
 # Build Event-Driven Data Pipelines using AWS Controllers for Kubernetes (ACK) and Amazon EMR on EKS
-In this example, we demonstrate to build an event-driven data pipeline using [AWS Controllers for Kubernetes (ACK)](https://aws-controllers-k8s.github.io/community/docs/community/overview/) and Amazon EMR on EKS. ACK is used to provision and configure serverless AWS resources: [Amazon EventBridge](https://aws.amazon.com/eventbridge/) and [AWS Step Functions](https://aws.amazon.com/step-functions/). Triggered by an Amazon EventBridge rule, AWS Step Functions orchestrates jobs running in Amazon EMR on EKS. By using ACK, you can use the Kubernetes API and configuration language to create and configure AWS resources the same way you create and configure a Kubernetes data processing jobs. The team can do the whole data operation without leaving the Kubernetes platform and only need to maintain the EKS cluster since all the other components are serverless.
+In this example, we demonstrate how to build an event-driven data pipeline using [AWS Controllers for Kubernetes (ACK)](https://aws-controllers-k8s.github.io/community/docs/community/overview/) and Amazon EMR on EKS. ACK is used to provision and configure serverless AWS resources: [Amazon EventBridge](https://aws.amazon.com/eventbridge/) and [AWS Step Functions](https://aws.amazon.com/step-functions/). Triggered by an Amazon EventBridge rule, AWS Step Functions orchestrates jobs running in Amazon EMR on EKS. By using ACK, you can use the Kubernetes API and configuration language to create and configure AWS resources the same way you create and configure Kubernetes data processing jobs. The team can perform all data plane operation without leaving the Kubernetes platform and only needs to maintain the EKS cluster since all the other components are serverless.
 
 
-The example demonstrates to build an event-driven data pipeline using ACK and Amazon EMR on EKS. Triggered by an Amazon EventBridge rule, AWS Step Functions orchestrates jobs running in Amazon EMR on EKS. 
+We will demo how to build an event-driven data pipeline using ACK controllers for Amazon EMR on EKS, AWS Step Functions, Amazon EventBridge and Amazon S3. A EKS cluster with ACK controllers will be provisioned using terraform modules. The emr-data-team-a namespace is created and bound with the virtual cluster my-ack-vc in EMR. ACK controllers will create a S3 bucket, a EventBridge rule for pattern matching and target routing, and a Step Functions state machine as an EventBridge rule target based on Kubernetes resources defined in YAML manifests. Sample spark scripts and sample data are stored in the S3 bucket. The pipeline will be triggered when a new script is uploaded. An S3 upload notification is sent to EventBridge and, if it matches the specified rule pattern, triggering the Step Functions. The Step Functions will call the EMR virtual cluster to run the spark job and all the spark executors and driver are provisioned inside the emr-data-team-a namespace. The output is saved back to the S3 bucket and the developer can check the result from the EMR console. 
 
 ## Prerequisites:
 
@@ -75,8 +75,8 @@ kubectl apply -f ack-yamls/emr-virtualcluster.yaml
 
 
 ### Create a S3 bucket and upload data
-Next, let’s create a S3 bucket for storing spark pod templates and sample data. 
-*Note*: Please change the bucket name in s3.yaml as well as in eventbridge.yaml and sfn.yaml. You also need to update upload-inputdata.sh and upload-spark-scripts.sh with the new bucket name. If you don’t see the bucket got created, you can check the log from ACK S3 controller pod for details. The error is mostly caused by the bucket with the same name has existed. 
+Next, let’s create a S3 bucket for storing Spark pod templates and sample data. 
+*Note*: Please change the bucket name in `s3.yaml` as well as in `eventbridge.yaml` and `sfn.yaml`. You also need to update `upload-inputdata.sh` and `upload-spark-scripts.sh` with the new bucket name. If you don’t see the bucket got created, you can check the log from the ACK S3 controller pod for details. The error is mostly caused by a bucket with the same name already existing. 
 
 
 ```bash
@@ -84,19 +84,19 @@ kubectl apply -f ack-yamls/s3.yaml
 ```
 
 
-Run the command below to upload input data and pod templates. Once done, sparkjob-demo-bucket S3 bucket is created with two folders: input and scripts.
+Run the command below to upload input data and pod templates. Once done, 'sparkjob-demo-bucket' S3 bucket is created with two folders: input and scripts.
 ```bash
 bash spark-scripts-data/upload-inputdata.sh
 ```
 
 ### Create a Step Functions state machine
 
-You need to make the following changes in sfn.yaml before apply. 
+Make the following changes in `sfn.yaml` before calling `kubectl apply -f sfn.yaml`. 
 
-* replace the value for roleARN with stepfunctions_role_arn 
-* replace the value for ExecutionRoleArn with emr_on_eks_role_arn
-* replace the value for VirtualClusterId with your virtual cluster id
-* change sparkjob-demo-bucket with your bucket name 
+* replace the value of `roleARN` with the value of `stepfunctions_role_arn` 
+* replace the value of `ExecutionRoleArn` with `emr_on_eks_role_arn`
+* replace the value of `VirtualClusterId` with your `virtual cluster id`
+* replace the value of `sparkjob-demo-bucket` with the name of your S3 bucket 
 
 Your `sfn.yaml` should look like the following:
 ```bash
@@ -149,7 +149,7 @@ spec:
               ]
             }...
 ```
-You can get your virtual cluster id from EMR console or use the command below.
+You can get your virtual cluster ID from the EMR console or use the command below.
 ```bash
 kubectl get virtualcluster -o jsonpath={.items..status.id}
 ```
@@ -157,13 +157,13 @@ kubectl get virtualcluster -o jsonpath={.items..status.id}
 # result:
 f0u3vt3y4q2r1ot11m7v809y6  # VirtualClusterId
 ```
-Then, apply the manifest to create the Step Functions state machine.
+Apply the `sfn.yaml` manifest to create the Step Functions state machine.
 ```bash
 kubectl apply -f ack-yamls/sfn.yaml
 ```
 
 ### Create an EventBridge rule
-The last step is to create an EventBridge rule which is used as an event broker to receive event notifications from S3. Whenever a new file, such as a new spark script, is created in the S3 bucket, the EventBridge rule will evaluate (filter) the event and invoke the Step Functions if it matches the specified rule pattern, triggering the configured spark job.
+The last step is to create an EventBridge rule which is used as an event broker to receive event notifications from S3. Whenever a new file, such as a new Spark script, is created in the S3 bucket, the EventBridge rule will evaluate (filter) the event and invoke the Step Functions if it matches the specified rule pattern, triggering the configured Spark job.
 
 ```bash
 kubectl get StateMachine -o jsonpath={.items..status.ackResourceMetadata.arn}
@@ -172,12 +172,12 @@ kubectl get StateMachine -o jsonpath={.items..status.ackResourceMetadata.arn}
 # result
 arn: arn:aws:states:us-west-2:xxxxxxxxxx:stateMachine:run-spark-job-ack # sfn_arn
 ```
-Then, update eventbridge.yaml with 
+Then, update `eventbridge.yaml`: 
 
-* replace the value for roleARN with eventbridge_role_arn
-* replace with arn with your sfn_arn 
-* change sparkjob-demo-bucket with your bucket name 
-eventbridge.yaml
+* replace the value of `roleARN` with `eventbridge_role_arn`
+* replace the value of `targets.arn` with your `sfn_arn`
+* replace the value of `sparkjob-demo-bucket` with the name of your S3 bucket 
+`eventbridge.yaml`:
 ```bash
 apiVersion: eventbridge.services.k8s.aws/v1alpha1
 kind: Rule
@@ -218,16 +218,16 @@ kubectl apply -f ack-yamls/eventbridge.yaml
 ```
 
 ## Test the data pipeline
-To test the data pipeline, we will trigger it by uploading a spark script to the S3 bucket scripts folder using the command below.
+To test the data pipeline, we will trigger it by uploading a Spark script to the S3 bucket scripts folder:
 ```bash
 bash spark-scripts-data/upload-spark-scripts.sh
 ```
-The upload event triggers the EventBridge event and then calls the Step Functions state machine. As shown below, you can go to *Step Functions* console, click *State machines* and choose *run-spark-job-ack*. You will see a new execution is running. 
+The upload  triggers the EventBridge event which then calls the Step Functions state machine. As shown below, you can go to *Step Functions* console, click *State machines* and choose *run-spark-job-ack*. You will see a new execution is running. 
 
 ![sfn-results](img/sfn-results.png)
 
 
-For the spark job details, you can go to *EMR console,* choose *Virtual clusters* and then click *my-ack-vc*. You will get all the job running history for this virtual cluster. Click *Spark UI* button in any row, you will be redirected the spark history server for more spark driver and executor logs.
+For the spark job details, you can go to *EMR console*, choose *Virtual clusters* and then click *my-ack-vc*. You will get all the job running history for this virtual cluster. Click *Spark UI* button in any row, you will be redirected the Spark history server for more Spark driver and executor logs.
 
 ![emr-results](img/emr-results.png)
 
