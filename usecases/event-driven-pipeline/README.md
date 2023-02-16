@@ -98,7 +98,7 @@ You need to make the following changes in sfn.yaml before apply.
 * replace the value for VirtualClusterId with your virtual cluster id
 * change sparkjob-demo-bucket with your bucket name 
 
-sfn.yaml
+Your `sfn.yaml` should look like the following:
 ```bash
 apiVersion: sfn.services.k8s.aws/v1alpha1
 kind: StateMachine
