@@ -76,7 +76,7 @@ kubectl apply -f ack-yamls/emr-virtualcluster.yaml
 
 ### Create a S3 bucket and upload data
 Next, let’s create a S3 bucket for storing spark pod templates and sample data. 
-*Note*: If you don’t see the bucket got created, you can check the log from ACK S3 controller pod for details. The error is mostly caused by the bucket with the same name has existed. You need to change the bucket name in s3.yaml as well as in eventbridge.yaml and sfn.yaml. You also need to update upload-inputdata.sh and upload-spark-scripts.sh with the new bucket name.
+*Note*: Please change the bucket name in s3.yaml as well as in eventbridge.yaml and sfn.yaml. You also need to update upload-inputdata.sh and upload-spark-scripts.sh with the new bucket name. If you don’t see the bucket got created, you can check the log from ACK S3 controller pod for details. The error is mostly caused by the bucket with the same name has existed. 
 
 
 ```bash
