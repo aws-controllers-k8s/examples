@@ -3,9 +3,9 @@
 In this example, we demonstrate how to build an event-driven data pipeline using [AWS Controllers for Kubernetes (ACK)](https://aws-controllers-k8s.github.io/community/docs/community/overview/) and Amazon EMR on EKS. ACK is used to provision and configure serverless AWS resources: [Amazon EventBridge](https://aws.amazon.com/eventbridge/) and [AWS Step Functions](https://aws.amazon.com/step-functions/). Triggered by an Amazon EventBridge rule, AWS Step Functions orchestrates jobs running in Amazon EMR on EKS. By using ACK, you can use the Kubernetes API and configuration language to create and configure AWS resources the same way you create and configure Kubernetes data processing jobs. The team can perform all data plane operation without leaving the Kubernetes platform and only needs to maintain the EKS cluster since all the other components are serverless.
 
 
-We will demo how to build an event-driven data pipeline using ACK controllers for Amazon EMR on EKS, AWS Step Functions, Amazon EventBridge and Amazon S3. A EKS cluster with ACK controllers will be provisioned using terraform modules. The emr-data-team-a namespace is created and bound with the virtual cluster my-ack-vc in EMR. ACK controllers will create a S3 bucket, a EventBridge rule for pattern matching and target routing, and a Step Functions state machine as an EventBridge rule target based on Kubernetes resources defined in YAML manifests. Sample spark scripts and sample data are stored in the S3 bucket. The pipeline will be triggered when a new script is uploaded. An S3 upload notification is sent to EventBridge and, if it matches the specified rule pattern, triggering the Step Functions. The Step Functions will call the EMR virtual cluster to run the spark job and all the spark executors and driver are provisioned inside the emr-data-team-a namespace. The output is saved back to the S3 bucket and the developer can check the result from the EMR console. 
+We will demo how to build an event-driven data pipeline using ACK controllers for Amazon EMR on EKS, AWS Step Functions, Amazon EventBridge and Amazon S3. A EKS cluster with ACK controllers will be provisioned using terraform modules. The `emr-data-team-a` namespace is created and bound with the virtual cluster `my-ack-vc` in EMR. ACK controllers will create a S3 bucket, a EventBridge rule for pattern matching and target routing, and a Step Functions state machine as an EventBridge rule target based on Kubernetes resources defined in YAML manifests. Sample spark scripts and sample data are stored in the S3 bucket. The pipeline will be triggered when a new script is uploaded. An S3 upload notification is sent to EventBridge and, if it matches the specified rule pattern, triggering the Step Functions. The Step Functions will call the EMR virtual cluster to run the spark job and all the spark executors and driver are provisioned inside the `emr-data-team-a` namespace. The output is saved back to the S3 bucket and the developer can check the result from the EMR console. 
 
-## Prerequisites:
+## Prerequisites
 
 Ensure that you have the following tools installed locally:
 
@@ -74,8 +74,8 @@ kubectl apply -f ack-yamls/emr-virtualcluster.yaml
 ![virtual cluster](img/vc-sfn.png)
 
 
-### Create a S3 bucket and upload data
-Next, let’s create a S3 bucket for storing Spark pod templates and sample data. 
+### Create an S3 bucket and upload data
+Next, let’s create an S3 bucket for storing Spark pod templates and sample data.
 *Note*: Please change the bucket name in `s3.yaml` as well as in `eventbridge.yaml` and `sfn.yaml`. You also need to update `upload-inputdata.sh` and `upload-spark-scripts.sh` with the new bucket name. If you don’t see the bucket got created, you can check the log from the ACK S3 controller pod for details. The error is mostly caused by a bucket with the same name already existing. 
 
 
@@ -84,7 +84,7 @@ kubectl apply -f ack-yamls/s3.yaml
 ```
 
 
-Run the command below to upload input data and pod templates. Once done, 'sparkjob-demo-bucket' S3 bucket is created with two folders: input and scripts.
+Run the command below to upload input data and pod templates. Once done, `sparkjob-demo-bucket` S3 bucket is created with two folders: input and scripts.
 ```bash
 bash spark-scripts-data/upload-inputdata.sh
 ```
