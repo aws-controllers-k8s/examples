@@ -1,0 +1,12 @@
+apiVersion: eventbridge.services.k8s.aws/v1alpha1
+kind: Rule
+metadata:
+  name: $RULE_NAME
+spec:
+  name: $RULE_NAME
+  description: "ACK EventBridge Scheduled Rule to CloudWatch Logs"
+  scheduleExpression: "rate(1 minute)"
+  targets:
+    - arn: $CW_LOGS_ARN
+      id: cw-rule-target
+      roleARN: $ROLE_ARN

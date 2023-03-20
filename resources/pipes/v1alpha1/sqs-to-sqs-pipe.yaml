@@ -1,0 +1,22 @@
+apiVersion: pipes.services.k8s.aws/v1alpha1
+kind: Pipe
+metadata:
+  name: $PIPE_NAME
+spec:
+  name: $PIPE_NAME
+  source: $SQS_SOURCE_ARN
+  description: "SQS to SQS Pipe with filtering"
+  sourceParameters:
+    filterCriteria:
+      filters:
+        - pattern: |
+            {
+              "body": {
+                "from": ["kubernetes"]
+              }
+            }
+    sqsQueueParameters:
+      batchSize: 3
+      maximumBatchingWindowInSeconds: 5
+  target: $SQS_TARGET_ARN
+  roleARN: $ROLE_ARN

@@ -1,0 +1,25 @@
+apiVersion: eventbridge.services.k8s.aws/v1alpha1
+kind: Rule
+metadata:
+  name: $RULE_NAME
+spec:
+  name: $RULE_NAME
+  description: "ACK EventBridge Filter Rule to SQS using event bus reference"
+  eventBusRef:
+    from:
+      name: $EVENT_BUS_NAME
+  eventPattern: |
+    {
+      "detail-type":["event.for.ack.v0"]
+    }
+  targets:
+    - arn: $SQS_TARGET_ARN
+      id: sqs-rule-target
+      retryPolicy:
+        maximumRetryAttempts: 0 # no retries
+      deadLetterConfig:
+        arn: $DLQ_ARN
+      roleARN: $ROLE_ARN
+  tags:
+    - key: exampletag
+      value: examplevalue
