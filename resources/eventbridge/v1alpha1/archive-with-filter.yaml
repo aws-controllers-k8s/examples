@@ -1,0 +1,15 @@
+apiVersion: eventbridge.services.k8s.aws/v1alpha1
+kind: Archive
+metadata:
+  name: $ARCHIVE_NAME
+spec:
+  name: $ARCHIVE_NAME
+  description: "EventBridge Archive with a filter using event source reference to a bus"
+  eventSourceRef:
+    from:
+      name: $EVENT_BUS_NAME
+  retentionDays: 10
+  eventPattern: |
+    {
+      "detail-type":["myevent.v0"]
+    }

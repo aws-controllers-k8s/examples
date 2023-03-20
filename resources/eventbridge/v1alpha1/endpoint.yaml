@@ -1,0 +1,19 @@
+apiVersion: eventbridge.services.k8s.aws/v1alpha1
+kind: Endpoint
+metadata:
+  name: $ENDPOINT_NAME
+spec:
+  name: $ENDPOINT_NAME
+  description: "ACK EventBridge Endpoint with enabled replication"
+  eventBuses:
+    - eventBusARN: $SOURCE_EVENT_BUS_ARN
+    - eventBusARN: $TARGET_EVENT_BUS_ARN
+  routingConfig:
+    failoverConfig:
+      primary:
+        healthCheck: $HEALTH_CHECK_ID
+      secondary:
+        route: $SECONDARY_REGION
+  replicationConfig:
+    state: ENABLED
+  roleARN: $ROLE_ARN
