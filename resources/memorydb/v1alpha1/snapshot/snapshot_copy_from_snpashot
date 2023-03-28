@@ -1,0 +1,11 @@
+apiVersion: memorydb.services.k8s.aws/v1alpha1
+kind: Snapshot
+metadata:
+  name: $SNAPSHOT_NAME
+spec:
+  kmsKeyID: $KMS_KEY_ID
+  name: $SNAPSHOT_NAME
+  sourceSnapshotName: $SOURCE_SNAPSHOT_NAME
+  tags:
+    - key: $SNAPSHOT_TAG_KEY
+      value: $SNAPSHOT_TAG_VALUE

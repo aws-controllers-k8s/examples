@@ -1,4 +1,3 @@
----
 apiVersion: memorydb.services.k8s.aws/v1alpha1
 kind: ACL
 metadata:
@@ -6,7 +5,7 @@ metadata:
 spec:
   name: $ACL_NAME
   tags:
-  - key: $ACL_TAG_KEY
-    value: $ACL_TAG_VALUE
+    - key: $ACL_TAG_KEY
+      value: $ACL_TAG_VALUE
   userNames:
-  - $USER_NAME
+    - $USER_NAME

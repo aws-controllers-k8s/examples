@@ -1,4 +1,3 @@
----
 apiVersion: memorydb.services.k8s.aws/v1alpha1
 kind: ParameterGroup
 metadata:
@@ -7,9 +6,7 @@ spec:
   description: $DESCRIPTION
   family: $FAMILY
   name: $PARAMETER_GROUP_NAME
-  parameterNameValues:
-  - parameterName: $PARAMETER_NAME
-    parameterValue: $PARAMETER_VALUE
+  parameterNameValues: []
   tags:
-  - key: $PARAMETER_GROUP_TAG_KEY
-    value: $PARAMETER_GROUP_TAG_VALUE
+    - key: $PARAMETER_GROUP_TAG_KEY
+      value: $PARAMETER_GROUP_TAG_VALUE

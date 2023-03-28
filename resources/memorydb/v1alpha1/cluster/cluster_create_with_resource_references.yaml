@@ -1,0 +1,35 @@
+apiVersion: memorydb.services.k8s.aws/v1alpha1
+kind: Cluster
+metadata:
+  name: $CLUSTER_NAME
+spec:
+  aclRef:
+    from:
+      name: $ACL_NAME
+  autoMinorVersionUpgrade: true/false
+  description: $DESCRIPTION
+  engineVersion: $ENGINE_VERSION
+  kmsKeyID: $KMS_KEY_ID
+  maintenanceWindow: $MAINTENANCE_WINDOW
+  name: $CLUSTER_NAME
+  nodeType: $NODE_TYPE
+  numReplicasPerShard: $NUM_REPLICAS_PER_SHARD
+  numShards: $NUM_SHARDS
+  parameterGroupRef:
+    from:
+      name: $PARAMETER_GROUP_NAME
+  port: $PORT
+  securityGroupIDs:
+    - $SECURITY_GROUP_ID
+  snapshotARNs:
+    - $SNAPSHOT_ARN
+  snapshotRetentionLimit: $SNAPSHOT_RETENTION_LIMIT
+  snapshotWindow: $SNAPSHOT_WINDOW
+  snsTopicARN: $SNS_TOPIC_ARN
+  subnetGroupRef:
+    from:
+      name: $SUBNET_GROUP_NAME
+  tags:
+    - key: $CLUSTER_TAG_KEY
+      value: $CLUSTER_TAG_VALUE
+  tlsEnabled: true/false
