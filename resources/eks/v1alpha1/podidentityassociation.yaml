@@ -1,0 +1,18 @@
+apiVersion: eks.services.k8s.aws/v1alpha1
+kind: AccessEntry
+metadata:
+  name: $ACCESS_ENTRY_NAME
+spec:
+  clusterName: $CLUSTER_NAME
+  principalARN: $PRINCIPAL_ARN
+  accessPolicies:
+  - policyARN: arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy
+    accessScope:
+      type: namespace
+      namespaces: ["prod-1"]
+  - policyARN: arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy
+    accessScope:
+      type: namespace
+      namespaces: ["prod-2", "prod-3"]
+  tags:
+    key1: value1
