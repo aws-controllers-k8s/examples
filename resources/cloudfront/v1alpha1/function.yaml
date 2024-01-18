@@ -1,0 +1,10 @@
+apiVersion: cloudfront.services.k8s.aws/v1alpha1
+kind: Function
+metadata:
+  name: $FUNCTION_NAME
+spec:
+  name: $FUNCTION_NAME
+  functionCode: $FUNCTION_CODE_BASE64
+  functionConfig:
+    comment: $FUNCTION_COMMENT
+    runtime: $FUNCTION_RUNTIME
