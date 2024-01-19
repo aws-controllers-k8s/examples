@@ -1,0 +1,22 @@
+apiVersion: cloudfront.services.k8s.aws/v1alpha1
+kind: Distribution
+metadata:
+  name: $DISTRIBUTION_NAME
+spec:
+  distributionConfig:
+    comment: $DISTRIBUTION_COMMENT
+    enabled: true
+    defaultCacheBehavior:
+      targetOriginID: $ORIGIN_ID
+      viewerProtocolPolicy: $PROTO_POLICY
+      minTTL: $MIN_TTL
+      forwardedValues:
+        queryString: false
+        cookies:
+          forward: $COOKIE_POLICY
+    origins:
+      items:
+      - id: $ORIGIN_ID
+        domainName: $ORIGIN_S3_DOMAIN_NAME
+        s3OriginConfig:
+          originAccessIdentity: $ORIGIN_ACCESS_IDENTITY
