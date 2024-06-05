@@ -38,40 +38,32 @@ data:
         health.lua.useOpenLibs: true
         health.lua: |
           hs = {}
-          if obj.status ~= nil then
-            if obj.status.conditions ~= nil then
+          if obj.status and obj.status.conditions then
               for i, condition in ipairs(obj.status.conditions) do
-                if condition.type == "ACK.Recoverable" and condition.status == "True" then
-                  hs.status = "Degraded"
-                  hs.message = condition.message
-                  return hs
-                end
+                  if condition.type == "ACK.Recoverable" and condition.status == "True" then
+                      hs.status = "Degraded"
+                      hs.message = condition.message
+                      return hs
+                  elseif condition.type == "ACK.Terminal" and condition.status == "True" then
+                      hs.status = "Degraded"
+                      hs.message = condition.message
+                      return hs
+                  elseif condition.type == "ACK.ResourceSynced" then
+                      if condition.status == "True" then
+                          hs.status = "Healthy"
+                          hs.message = condition.message
+                          return hs
+                      elseif condition.status == "False" then
+                          hs.status = "Progressing"
+                          hs.message = condition.reason
+                          return hs
+                      elseif condition.status == "Unknown" then
+                          hs.status = "Degraded"
+                          hs.message = condition.reason
+                          return hs
+                      end
+                  end
               end
-              for i, condition in ipairs(obj.status.conditions) do
-                if condition.type == "ACK.Terminal" and condition.status == "True" then
-                  hs.status = "Degraded"
-                  hs.message = condition.message
-                  return hs
-                end
-              end
-              for i, condition in ipairs(obj.status.conditions) do
-                if condition.type == "ACK.ResourceSynced" and condition.status == "True" then
-                  hs.status = "Healthy"
-                  hs.message = condition.message
-                  return hs
-                end
-                if condition.type == "ACK.ResourceSynced" and condition.status == "False" then
-                  hs.status = "Progressing"
-                  hs.message = condition.reason
-                  return hs
-                end
-                if condition.type == "ACK.ResourceSynced" and condition.status == "Unknown" then
-                  hs.status = "Degraded"
-                  hs.message = condition.reason
-                  return hs
-                end
-              end
-            end
           end
 
           hs.status = "Progressing"
