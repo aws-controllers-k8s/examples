@@ -40,7 +40,11 @@ data:
           hs = {}
           if obj.status and obj.status.conditions then
               for i, condition in ipairs(obj.status.conditions) do
-                  if condition.type == "ACK.Recoverable" and condition.status == "True" then
+                  if condition.status == "Unknown" then
+                      hs.status = "Degraded"
+                      hs.message = condition.reason
+                      return hs
+                  elseif condition.type == "ACK.Recoverable" and condition.status == "True" then
                       hs.status = "Degraded"
                       hs.message = condition.message
                       return hs
@@ -55,10 +59,6 @@ data:
                           return hs
                       elseif condition.status == "False" then
                           hs.status = "Progressing"
-                          hs.message = condition.reason
-                          return hs
-                      elseif condition.status == "Unknown" then
-                          hs.status = "Degraded"
                           hs.message = condition.reason
                           return hs
                       end
