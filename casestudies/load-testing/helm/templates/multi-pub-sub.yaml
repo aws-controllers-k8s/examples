@@ -1,0 +1,80 @@
+# This range loop iterates over the number of PubSub pairs (SNS Topic and SQS Queues) specified in the .Values.pubSubsCount value.
+# For each iteration, it creates an SNS Topic and multiple SQS Queues with corresponding Subscriptions.
+{{- range $i, $e := until ( int .Values.pubSubsCount ) }}
+---
+# apiVersion for SNS Topic
+apiVersion: sns.services.k8s.aws/v1alpha1
+# Kind of resource
+kind: Topic
+# Metadata for the SNS Topic
+metadata:
+  # The name of the SNS Topic is constructed using the .Values.pubSubName and the current loop index.
+  name: {{ $.Values.pubSubName }}-{{ $i }}
+  # The namespace where the SNS Topic will be created.
+  namespace: {{ $.Values.pubSubNamespace }}
+  # The AWS region where the SNS Topic will be created.
+  annotations:
+    services.k8s.aws/region: {{ $.Values.awsRegion }}
+# Specification for the SNS Topic
+spec:
+  # The name of the SNS Topic in AWS.
+  name: {{ $.Values.pubSubName }}-{{ $i }}
+  # The display name of the SNS Topic in AWS.
+  displayName: {{ $.Values.pubSubName }}-{{ $i }}
+  # The delivery policy for the SNS Topic, loaded from a file.
+  deliveryPolicy: |-
+    {{- $.Files.Get "policies/topic-delivery-policy.json"  | nindent 4 -}}
+
+  # The access policy for the SNS Topic, rendered using a template function.
+  policy: |-
+    {{- include "ack-pub-sub.topicPolicy" (dict "root" $.Values "topic" $i) | nindent 4 }}
+    
+# This nested range loop iterates over the number of SQS Queues and Subscriptions specified in the .Values.subsPerPub list.
+{{- range $j := $.Values.subsPerPub }}
+---
+# apiVersion for SQS Queue
+apiVersion: sqs.services.k8s.aws/v1alpha1
+# Kind of resource
+kind: Queue
+# Metadata for the SQS Queue
+metadata:
+  # The name of the SQS Queue, constructed using the .Values.pubSubName, the current topic index, and the current subscription index.
+  name: {{ $.Values.pubSubName }}-{{ $i }}-sqs-sub-{{ $j.label }}
+  # The namespace where the SQS Queue will be created.
+  namespace: {{ $.Values.pubSubNamespace }}
+  # The AWS region where the SQS Queue will be created.
+  annotations:
+    services.k8s.aws/region: {{ $.Values.awsRegion }}
+# Specification for the SQS Queue
+spec:
+  # The name of the SQS Queue in AWS.
+  queueName: {{ $.Values.pubSubName }}-{{ $i }}-sqs-sub-{{ $j.label }}
+  # The access policy for the SQS Queue, rendered using a template function.
+  policy: |-
+    {{- include "ack-pub-sub.queuePolicy" (dict "root" $.Values "topic" $i "queue" $j) | nindent 4 }}
+    
+---
+# apiVersion for SNS Subscription
+apiVersion: sns.services.k8s.aws/v1alpha1
+# Kind of resource
+kind: Subscription
+# Metadata for the SNS Subscription
+metadata:
+  # The name of the SNS Subscription, constructed using the .Values.pubSubName, the current topic index, and the current subscription index.
+  name: {{ $.Values.pubSubName }}-{{ $i }}-sub-{{ $j.label }}
+  # The namespace where the SNS Subscription will be created.
+  namespace: {{ $.Values.pubSubNamespace }}
+  # The AWS region where the SNS Subscription will be created.
+  annotations:
+    services.k8s.aws/region: {{ $.Values.awsRegion }}
+# Specification for the SNS Subscription
+spec:
+  # The ARN of the SQS Queue to which the SNS Topic will be subscribed.
+  endpoint: arn:aws:sqs:{{ $.Values.awsRegion }}:{{ $.Values.awsAccountNo }}:{{ $.Values.pubSubName }}-{{ $i }}-sqs-sub-{{ $j.label }}
+  # The protocol for the SNS Subscription, in this case, SQS.
+  protocol: sqs
+  # The ARN of the SNS Topic to which the Subscription is created.
+  topicARN: arn:aws:sns:{{ $.Values.awsRegion }}:{{ $.Values.awsAccountNo }}:{{ $.Values.pubSubName }}-{{ $i }}
+
+{{- end }}
+{{- end }}
