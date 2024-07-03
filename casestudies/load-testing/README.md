@@ -1,5 +1,7 @@
 # Analyzing ACK Performance and Scalability
 
+**TL;DR:** This document presents a comprehensive analysis of the performance and scalability of AWS Controllers for Kubernetes (ACK) when deploying a large number of resources. The key finding is that despite initially taking over 2 hours to deploy 50K resources, increasing the `defaultMaxConcurrentSyncs` parameter reduced the deployment time to just 52 minutes. More importantly, deploying an additional 500 resources on top of the existing 50K resources took only 30 seconds, demonstrating ACK's efficient reconciliation process.
+
 ## Introduction
 
 This document presents a comprehensive analysis of the performance and scalability of AWS Controllers for Kubernetes (ACK) when deploying a large number of resources. The purpose of this study is to examine how ACK controllers handle the creation and management of 50K resources, including SNS topics and SQS queues.
@@ -87,7 +89,7 @@ So we installed another Helm chart which would deploy 500 additional resources.
 
 ![Deploy Additional Resources](deploy_additional_resources.png)
 
-Guess what, it just took **30 seconds** to deploy 500 additional resources, and hence the reconciliation time is negligible.
+> ### ⚡ Guess what, it just took **30 seconds** to deploy 500 additional resources, and hence the reconciliation time is negligible. ⚡
 
 ## Troubleshooting
 
