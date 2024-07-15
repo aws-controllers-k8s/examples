@@ -1,0 +1,9 @@
+apiVersion: v2
+name: ack-pub-sub-deploy
+description: A Helm chart for deploying a Publisher/Subscriber architecture using SNS and SQS
+
+type: application
+
+version: 0.1.0
+
+appVersion: "0.1.0"

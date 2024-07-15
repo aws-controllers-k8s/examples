@@ -1,0 +1,16 @@
+# Default values for ack-pub-sub.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+awsAccountNo: "account-id" # Account ID where the resources needs to be provisioned
+awsRegion: "region" # AWS region
+
+pubSubsCount: 10000   # Specificies the number of pub-sub configuration are deployed. Each includes a topic, and a number of queues/subscription base on the number of items in subsPerPub below
+pubSubName: "poc"  # This is the base name of all of the resources created
+pubSubNamespace: "default" # This is the namespace where resources are deployed. This namespace is NOT created by the chart so needs to exist prior to installling chart.
+
+# This controls the number and naming convention for the subscriber/queue pairs.
+subsPerPub:
+  - label: "00"
+  - label: "01"
+ 
