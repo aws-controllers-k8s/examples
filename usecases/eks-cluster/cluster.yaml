@@ -1,0 +1,199 @@
+apiVersion: ec2.services.k8s.aws/v1alpha1
+kind: VPC
+metadata:
+  name: example-cluster-vpc
+spec:
+  cidrBlocks:
+  - 192.168.0.0/16
+  enableDNSSupport: true
+  enableDNSHostnames: true
+---
+apiVersion: ec2.services.k8s.aws/v1alpha1
+kind: ElasticIPAddress
+metadata:
+  name: example-cluster-eip
+spec: {}
+---
+apiVersion: ec2.services.k8s.aws/v1alpha1
+kind: InternetGateway
+metadata:
+  name: example-cluster-igw
+spec:
+  vpcRef:
+    from:
+      name: example-cluster-vpc
+---
+apiVersion: ec2.services.k8s.aws/v1alpha1
+kind: RouteTable
+metadata:
+  name: example-cluster-public-route-table
+spec:
+  vpcRef:
+    from:
+      name: example-cluster-vpc
+  routes:
+    - destinationCIDRBlock: 0.0.0.0/0
+      gatewayRef:
+        from:
+          name: example-cluster-igw
+---
+apiVersion: ec2.services.k8s.aws/v1alpha1
+kind: Subnet
+metadata:
+  name: example-cluster-public-subnet1
+spec:
+  availabilityZone: us-west-2a
+  cidrBlock: 192.168.0.0/18
+  vpcRef:
+    from:
+      name: example-cluster-vpc
+  routeTableRefs:
+  - from:
+      name: example-cluster-public-route-table
+  mapPublicIPOnLaunch: true
+---
+apiVersion: ec2.services.k8s.aws/v1alpha1
+kind: Subnet
+metadata:
+  name: example-cluster-public-subnet2
+spec:
+  availabilityZone: us-west-2b
+  cidrBlock: 192.168.64.0/18
+  vpcRef:
+    from:
+      name: example-cluster-vpc
+  routeTableRefs:
+  - from:
+      name: example-cluster-public-route-table
+  mapPublicIPOnLaunch: true
+---
+apiVersion: ec2.services.k8s.aws/v1alpha1
+kind: NATGateway
+metadata:
+  name: example-cluster-natgateway1
+spec:
+  subnetRef:
+    from:
+      name: example-cluster-public-subnet2
+  allocationRef:
+    from:
+      name: example-cluster-eip
+---
+apiVersion: iam.services.k8s.aws/v1alpha1
+kind: Role
+metadata:
+  name: example-cluster-cluster-role
+spec:
+  name: example-cluster-cluster-role
+  description: "Example cluster cluster role"
+  policies:
+    - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+  assumeRolePolicyDocument: |
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "eks.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    }
+---
+apiVersion: iam.services.k8s.aws/v1alpha1
+kind: Role
+metadata:
+  name: example-cluster-node-role
+spec:
+  name: example-cluster-node-role
+  description: "Example cluster node role"
+  policies:
+    - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+    - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+    - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+  assumeRolePolicyDocument: |
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "ec2.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    }
+---
+apiVersion: iam.services.k8s.aws/v1alpha1
+kind: Role
+metadata:
+  name: ack-admin-pia-role
+spec:
+  name: ack-admin-pia-role
+  description: "Example cluster admin pia role"
+  policies:
+    - arn:aws:iam::aws:policy/AdministratorAccess
+  assumeRolePolicyDocument: |
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "AllowEksAuthToAssumeRoleForPodIdentity",
+                "Effect": "Allow",
+                "Principal": {
+                    "Service": "pods.eks.amazonaws.com"
+                },
+                "Action": [
+                    "sts:AssumeRole",
+                    "sts:TagSession"
+                ]
+            }
+        ]
+    }
+---
+apiVersion: eks.services.k8s.aws/v1alpha1
+kind: Cluster
+metadata:
+  name: example-cluster
+spec:
+  name: example-cluster
+  roleRef:
+    from:
+      name: example-cluster-cluster-role
+  version: "1.29"
+  resourcesVPCConfig:
+    endpointPrivateAccess: false
+    endpointPublicAccess: true
+    subnetRefs:
+    - from:
+        name: example-cluster-public-subnet1
+    - from:
+        name: example-cluster-public-subnet2
+---
+apiVersion: eks.services.k8s.aws/v1alpha1
+kind: Nodegroup
+metadata:
+  name: example-cluster-nodegroup
+spec:
+  name: example-ng
+  diskSize: 100
+  clusterRef:
+    from:
+      name: example-cluster
+  subnetRefs:
+  - from:
+      name: example-cluster-public-subnet1
+  - from:
+      name: example-cluster-public-subnet2
+  nodeRoleRef:
+    from:
+      name: example-cluster-node-role
+  updateConfig:
+    maxUnavailable: 1
+  scalingConfig:
+    minSize: 1
+    maxSize: 1
+    desiredSize: 1 
