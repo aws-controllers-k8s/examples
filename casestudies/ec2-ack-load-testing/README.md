@@ -34,7 +34,7 @@ performance and other metrics like resource counts, reconciliation time, etc.
 **Applying ACK Custom Resource Definitions**
 
 During testing we found that Helm templating engine struggled to render 50k Security Group CRD's and fill them with Security Group rules, so we had to write custom GO script.
-
+You can check example script [here](/casestudies/ec2-ack-load-testing/sg_with_rules.go)
 ## Key Observations
 
 ### ACK Controller default settings
@@ -57,23 +57,23 @@ export AWS_REGION=us-west-2
 aws ecr-public get-login-password --region us-east-1 | helm registry login --username AWS --password-stdin public.ecr.aws
 helm upgrade -i --create-namespace -n $ACK_SYSTEM_NAMESPACE ack-$SERVICE-controller \
   oci://public.ecr.aws/aws-controllers-k8s/$SERVICE-chart --version=$RELEASE_VERSION \
-  --set=aws.region=$AWS_REGION --set=metrics.service.create=true set=reconcile.defaultMaxConcurrentSyncs=200 \
+  --set=aws.region=$AWS_REGION --set=metrics.service.create=true --set=reconcile.defaultMaxConcurrentSyncs=200 \
   --set=resources.limits.memory=4Gi --set=resources.limits.cpu=1000m
 ```
 
 ### AWS API Throttling
 
 Depending on number/type of provisioned resources, number of concurrent syncs and limits in your particular AWS account you might experience AWS API Throttling.
-AWS ACK Controllers have in-built rety and exponential backoff logic so this won't be critical, but may delay reconcilliation process. You can experiment with concurrent sync numbers and/or work with AWS suppport to increase rate limits for particular services. 
+AWS ACK Controllers have in-built retry and exponential backoff logic so this won't be critical, but may delay reconcilliation process. You can experiment with concurrent sync numbers and/or work with AWS suppport to increase rate limits for particular services. 
 
 ### Analyzing provisioning and reconcilliation process
 
-When we submitted initial 49900 CRDs, they were processed by EKS API server in 9 minutes and it took 87 minutes in total for EC2 ACK Controller to reconcile all resources
+When we submitted initial 49900 CRs, they were processed by EKS API server in 9 minutes and it took 87 minutes in total for EC2 ACK Controller to reconcile all resources
 with AWS APIs. EC2 ACK controller CPU utilization remained minimal through the process and memory usage maxed out at 2.25 GiB. There was increase on etcd request latency for the duration of the process, but it remained within normal range.   
 
 ![Figure 1](ack_performance_at_scale_graph1.png)
 
-EKS API server CPU utilization increaed only in the first 9 minuts when CRDs were applied and memory usage maxed out at 7.3 GiB. There was not API server errors registered during the process and not requests were dropped by APF.  
+EKS API server CPU utilization increaed only in the first 9 minuts when CRDs were applied and memory usage maxed out at 7.3 GiB. There was no API server errors registered during the process and no requests were dropped by APF.  
 
 ![Figure 2](ack_performance_at_scale_graph2.png)
 
@@ -111,8 +111,3 @@ to optimize the deployment process.
 Remember, the optimal configuration may vary depending on your specific use case, cluster setup,
 and resource requirements. It's always a good practice to monitor and adjust the settings based
 on your observations and performance requirements.
-
-
-
-
-
